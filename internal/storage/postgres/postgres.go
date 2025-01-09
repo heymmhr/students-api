@@ -88,3 +88,27 @@ func (p *Postgres) GetStudents() ([]types.Student, error) {
 
 	return students, nil
 }
+
+func (p *Postgres) UpdateStudent(id int64, name string, email string, age int) error {
+
+	query := `
+	UPDATE students
+	SET name = $1, email = $2, age = $3
+	WHERE id = $4
+	`
+	result, err := p.Db.Exec(query, name, email, age, id)
+	if err != nil {
+		return fmt.Errorf("failed to update student: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to check rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no student found with id %d", id)
+	}
+	return nil
+
+}
