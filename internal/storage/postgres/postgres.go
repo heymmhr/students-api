@@ -110,5 +110,15 @@ func (p *Postgres) UpdateStudent(id int64, name string, email string, age int) e
 		return fmt.Errorf("no student found with id %d", id)
 	}
 	return nil
+}
 
+func (p *Postgres) DeleteStudent(id int64) error {
+
+	query := "DELETE FROM students WHERE id = $1"
+
+	_, err := p.Db.Exec(query, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete student with id id %d: %w", id, err)
+	}
+	return nil
 }
