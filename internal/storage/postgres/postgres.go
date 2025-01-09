@@ -64,3 +64,27 @@ func (p *Postgres) GetStudentById(id int64) (types.Student, error) {
 	}
 	return student, nil
 }
+
+func (p *Postgres) GetStudents() ([]types.Student, error) {
+
+	query := "SELECT id, name, email, age FROM students"
+
+	rows, err := p.Db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get students: %w", err)
+	}
+	defer rows.Close()
+
+	var students []types.Student
+	for rows.Next() {
+		var student types.Student
+
+		err := rows.Scan(&student.Id, &student.Name, &student.Email, &student.Age)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan student row: %w", err)
+		}
+		students = append(students, student)
+	}
+
+	return students, nil
+}
